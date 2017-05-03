@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Title</title>
+  <meta charset="utf-8">
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+    @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+    @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+    body { font-family: 'Droid Serif'; }
+    h1, h2, h3 {
+      font-family: 'Yanone Kaffeesatz';
+      font-weight: normal;
+      margin: 0 0;
+    }
+    .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+  </style>
+</head>
+<body>
+<textarea id="source">
+
+class: center, middle
+
+# implicits and you
+
+HammerLab Lunch & Learn
+
+May 3, 2017
+
+Ryan Williams
+
+---
+
+# [Scala Days 2017 Keynote](https://www.youtube.com/watch?v=Oij5V7LQJsA)
+
+Martin Odersky
+
+![](https://cl.ly/1B0D3B2l3O25/Screen%20Shot%202017-05-02%20at%209.33.40%20PM.png)
+
+![](https://cl.ly/2E3t3R182k2k/Screen%20Shot%202017-05-03%20at%2012.02.32%20PM.png)
+
+---
+
+# Context
+
+![](https://cl.ly/0P373A450t2z/Screen%20Shot%202017-05-02%20at%209.28.12%20PM.png)
+
+---
+
+# Bad Context
+
+![](https://cl.ly/2g0U1d0C332L/Screen%20Shot%202017-05-02%20at%209.27.49%20PM.png)
+
+---
+
+# "Parameterize all the things"
+
+![](https://cl.ly/0G3l1u0T0e19/Screen%20Shot%202017-05-02%20at%209.31.23%20PM.png)
+
+---
+
+# "Too much of a good thing"
+
+![](https://cl.ly/3b1J0w0a1N0w/Screen%20Shot%202017-05-03%20at%2012.00.52%20PM.png)
+
+---
+
+# "A more direct approach"
+
+![](https://cl.ly/03013B2h3Q2B/Screen%20Shot%202017-05-03%20at%2012.01.22%20PM.png)
+
+---
+
+# 3 kinds of implicits
+
+- implicit parameters
+
+  ```scala
+  def pathExists(path: Path)(implicit conf: Configuration): Boolean = …
+  ```
+
+- implicit conversions
+
+  ```scala
+  implicit def aToB(a: A): B = …
+
+  def foo(b: B) { ... }
+
+  val a = A()
+  foo(a)
+  ```
+
+- implicit classes
+
+    ```scala
+    implicit class C(x: T) { ... }
+    ```
+
+        expands to:
+    ```scala
+    class C(x: T) { ... }
+    implicit def C(x: T) = new C(x)
+    ```
+---
+
+# Implicit Parameters
+
+  ```scala
+  def pathExists(path: Path)(implicit conf: Configuration): Boolean = …
+  ```
+
+- most of the power of implicits comes from extensive use of implicit parameters
+
+  - e.g. type classes
+
+- most analogous to OCaml's / other languages' implicit constructs
+
+- Rules:
+
+  ![](https://cl.ly/122C3r0l2w1X/Screen%20Shot%202017-05-03%20at%2012.00.23%20PM.png)
+
+---
+
+# Implicit Conversions
+
+  ```scala
+  implicit def aToB(a: A): B = …
+
+  def foo(b: B) { ... }
+
+  val a = A()
+  foo(a)
+  ```
+
+![](https://cl.ly/1f2y2H3C471o/Screen%20Shot%202017-05-03%20at%2012.52.41%20PM.png)
+
+---
+
+## Case Study: Extension Methods
+
+"Other languages have special-cased extension-method functionality, but Scala gets them as a corollary of implicits"
+
+```scala
+val map1 = Map(("a", 1), ("b", 2), ("c", 3))
+val map2 = Map("a" -> 1, "b" -> 2, "c" -> 3)
+val map3 = Map("a" → 1, "b" → 2, "c" → 3)
+```
+
+![](https://cl.ly/323Z0L0q2C0B/Screen%20Shot%202017-05-03%20at%2012.42.57%20PM.png)
+
+![](https://cl.ly/3C1H2s1A203e/Screen%20Shot%202017-05-03%20at%2012.04.37%20PM.png)
+
+---
+
+# JavaConversions
+
+```scala
+import scala.collection.JavaConversions._
+def double(nums: java.util.List[Int]): java.util.List[Int] =
+  nums.map(_ * 2)
+```
+
+aka:
+
+```scala
+def double(nums: java.util.List[Int]): java.util.List[Int] =
+  bufferAsJavaList(asScalaBuffer(nums).map(_ * 2))
+```
+
+![](https://cl.ly/3Z3m2Z0N2114/Screen%20Shot%202017-05-03%20at%2012.57.46%20PM.png)
+
+---
+
+# → JavaConverters:
+
+```scala
+import scala.collection.JavaConverters._
+def double(nums: java.util.List[Int]): java.util.List[Int] =
+  nums
+    .asScala
+    .map(_ * 2)
+    .asJava
+```
+
+---
+
+# Paired RDDs
+
+```scala
+object RDD {
+  …
+  implicit def rddToPairRDDFunctions[K, V](rdd: RDD[(K, V)]): PairRDDFunctions[K, V] =
+    new PairRDDFunctions(rdd)
+}
+```
+
+```scala
+class PairRDDFunctions[K, V](self: RDD[(K, V)]) {
+  def groupByKey(): RDD[(K, Iterable[V])] = …
+}
+```
+
+```scala
+val rdd1: RDD[(Int, String)]
+rdd1.groupByKey()  // works
+rddToPairRDDFunctions(rdd1).groupByKey()
+
+val rdd2: RDD[Int]
+rdd2.groupByKey()  // compile error
+```
+
+---
+
+# Type-Classes
+
+- pattern for ad-hoc polymorphism
+
+- interface that can be implemented for misc classes, separately from those classes' definitions:
+
+    ```scala
+    trait Showable[T] { def show(x: T): String }
+    def show[T](t : T)(implicit s : Showable[T]): String = s.show(t)
+    ```
+
+- instantiate `Showable` for classes that are "showable":
+
+    ```scala
+    object IntShowable extends Showable[Int] {
+        def show(x: Int) = s"#$x"
+    }
+
+    show(7)(IntShowable)
+    ```
+
+- add implicits:
+
+    ```scala
+    implicit object IntShowable extends Showable[Int] {
+        def show(x: Int) = s"#$x"
+    }
+
+    show(7)    // "#7"
+    show("a")  // compile error
+    ```
+
+---
+
+# Type-Classes
+
+```scala
+def show[T](x : T)(implicit s : Showable[T]): String = s.show(x)  // "public API"
+
+trait Showable[T] { def show(x: T): String }
+
+object Showable {
+
+    implicit object IntShowable extends Showable[Int] {
+        def show(x: Int) = s"#$x"  // prepend "#"
+    }
+
+    implicit object StringShowable extends Showable[String] {
+        def show(x: String) = s"'$x'"  // single-quote
+    }
+
+    implicit def listShowable[T](implicit s: Showable[T]): Showable[List[T]] =
+        new Showable[List[T]] {
+            override def show(x: List[T]): String =
+                x
+                    .map(s.show)
+                    .mkString(",")
+        }
+}
+```
+
+```scala
+show(7)                // #7
+show("abc")            // 'abc'
+show(List(1,2,3))      // #1,#2,#3
+show(List(1, "2", 3))  // compile error!
+```
+
+---
+
+# Type-Classes
+
+```scala
+show(7)                // #7
+show("abc")            // 'abc'
+show(List(1,2,3))      // #1,#2,#3
+show(List(1, "2", 3))  // compile error!
+```
+```
+[error] test.scala:76: could not find implicit value for parameter s: Showable[List[Any]]
+[error]     show(List(1,"2",3))
+[error]         ^
+```
+
+---
+
+# [Shapeless](https://github.com/milessabin/shapeless)
+Insane type-level programming abstractions using implicits
+
+- [HLists](https://github.com/milessabin/shapeless/wiki/Feature-overview:-shapeless-2.0.0#heterogenous-lists) aka products:
+
+    ```scala
+    import shapeless.{HList, ::, HNil}
+
+    val product: String :: Int :: Boolean :: HNil =
+        "Sunday" :: 1 :: false :: HNil
+
+    val first = product.head
+    // first: String = Sunday
+
+    val second = product.tail.head
+    // second: Int = 1
+
+    val rest = product.tail.tail
+    // rest: shapeless.::[Boolean,shapeless.HNil] = false :: HNil        
+    ```
+
+- [Coproducts](https://github.com/milessabin/shapeless/wiki/Feature-overview:-shapeless-2.0.0#coproducts-and-discriminated-unions):
+
+    ```scala
+    import shapeless.{Coproduct, :+:, CNil, Inl, Inr}
+
+    case class Red()
+    case class Amber()
+    case class Green()
+
+    type Light = Red :+: Amber :+: Green :+: CNil
+    ```
+
+---
+
+## Automatic type-class derivation
+
+```scala
+trait CsvEncoder[A] {
+    def encode(value: A): List[String]
+}
+
+def createEncoder[A](func: A => List[String]): CsvEncoder[A] =
+    new CsvEncoder[A] { def encode(value: A): List[String] = func(value) }
+
+implicit val stringEncoder: CsvEncoder[String] =
+    createEncoder(str => List(str))
+
+implicit val intEncoder: CsvEncoder[Int] =
+    createEncoder(num => List(num.toString))
+
+implicit val booleanEncoder: CsvEncoder[Boolean] =
+    createEncoder(bool => List(if(bool) "yes" else "no"))
+```
+
+```scala
+case class Employee(name: String, number: Int, manager: Boolean)
+
+// CsvEncoder instance for the custom data type:
+implicit val employeeEncoder: CsvEncoder[Employee] =
+    new CsvEncoder[Employee] {
+        def encode(e: Employee): List[String] =
+            List(
+                e.name,
+                e.number.toString,
+                if(e.manager) "yes" else "no"
+            )
+    }
+```
+
+---
+
+## Automatic type-class derivation
+
+Extend to arbitrary products:
+
+```scala
+import shapeless.{HList, ::, HNil}
+
+implicit val hnilEncoder: CsvEncoder[HNil] =
+    createEncoder(hnil => Nil)
+
+implicit def hlistEncoder[H, T <: HList](
+    implicit
+    hEncoder: CsvEncoder[H],
+    tEncoder: CsvEncoder[T]
+): CsvEncoder[H :: T] =
+    createEncoder {
+        case h :: t =>
+            hEncoder.encode(h) ++ tEncoder.encode(t)
+
+    }
+```
+
+```scala
+val reprEncoder: CsvEncoder[String :: Int :: Boolean :: HNil] =
+  implicitly
+
+reprEncoder.encode("abc" :: 123 :: true :: HNil)
+// res9: List[String] = List(abc, 123, yes)
+```
+
+likewise JSON etc.
+
+
+---
+
+# [Ocaml Modular Implicits](https://github.com/ocamllabs/ocaml-modular-implicits)
+
+```ocaml
+module type Show = sig
+    type t
+    val show : t -> string
+end
+
+let show {S : Show} x = S. show x
+
+implicit module Show_int = struct
+    type t = int
+    let show x = string_of_int x
+end
+
+implicit module Show_float = struct
+    type t = float
+    let show x = string_of_float x
+end
+
+implicit module Show_list {S : Show} = struct
+    type t = S. t list
+    let show x = string_of_list S . show x
+end
+
+let () =
+    print_endline (" Show an int : " ^ show 5);
+    print_endline (" Show a float : " ^ show 1.5);
+    print_endline (" Show a list of ints : " ^ show [1; 2; 3]);
+```
+
+---
+
+# [Ocaml Modular Implicits](https://github.com/ocamllabs/ocaml-modular-implicits)
+
+- afaict, straightforward adaptation of Scala implicit parameters
+
+    - NB: no implicit conversions/classes ![](https://cl.ly/2u2c1d3R2w1X/isaacshrug.png)
+
+- works a bit differently due to extant differences between ocaml/scala
+
+    - structural typing
+
+    - Scala requires type-class instances to **be** ducks
+
+        ```scala
+        implicit object IntShowable extends Showable[Int]
+        ```
+
+    - Ocaml: type-quacks ⟹ type-ducks
+
+        ```ocaml
+        implicit module Show_int = struct
+            type t = int
+            let show x = string_of_int x
+        end
+        ```
+
+---
+
+# Coherence / Canonicity
+
+Can there be more than one instance of a given type-class for a given type?
+
+- Haskell: no
+
+- OCaml/Scala(/everyone else?): yes
+
+![](https://cl.ly/0q2h0M3I010Z/Screen%20Shot%202017-05-03%20at%202.18.57%20PM.png)
+
+---
+
+# Coherence / Canonicity
+
+![](https://cl.ly/321Y0f091s3x/Screen%20Shot%202017-05-03%20at%202.18.43%20PM.png)
+
+![](https://cl.ly/2o2e3X3W0R0t/Screen%20Shot%202017-05-03%20at%202.20.00%20PM.png)
+
+---
+
+# Resolution vs. Type Inference
+
+- resolution depends on types
+
+    ```ocaml
+    show 5
+    ```    
+
+- types depend on resolution
+
+    ```ocaml
+    module type Sqrtable = sig
+        type t
+        val sqrt : t -> t
+    end
+
+    let sqrt {S : Sqrtable } x = S. sqrt x
+
+    implicit module Sqrt_float = struct
+        type t = float
+        let sqrt x = sqrt_float x
+    end
+
+    let sqrt_twice x = sqrt ( sqrt x )
+    ```
+
+- ⟹ heuristics
+
+---
+
+# Resolution vs. Type Inference
+
+![](https://cl.ly/121V0U3e1H08/Screen%20Shot%202017-05-03%20at%202.16.04%20PM.png)
+
+---
+
+![](https://cl.ly/2m3H1P321A3T/Screen%20Shot%202017-05-03%20at%202.23.17%20PM.png)
+
+![](https://cl.ly/1J2W0R3a2K3v/Screen%20Shot%202017-05-03%20at%202.23.34%20PM.png)
+
+---
+
+# End
+
+![](https://cl.ly/0i0S2a3i1v2b/Screen%20Shot%202017-05-03%20at%202.24.29%20PM.png)
+
+
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js">
+</script>
+<script>
+  var slideshow = remark.create();
+</script>
+</body>
+</html>
+

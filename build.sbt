@@ -5,5 +5,6 @@ addScala212
 
 deps ++= Seq(
   "com.chuusai" %% "shapeless" % "2.3.2",
-  "org.scalautils" %% "scalautils" % "2.1.5"
+  "org.scalautils" %% "scalautils" % "2.1.5",
+  "org.typelevel" %% "spire" % "0.14.1"
 )
