@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Title</title>
+  <meta charset="utf-8">
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+    @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+    @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+    body { 
+      font-family: sans-serif; 
+    }
+
+    p {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Yanone Kaffeesatz';
+      font-weight: normal;
+      margin: 0 0;
+    }
+    .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+
+    .pad-top {
+      padding-top: 2em;
+    }
+
+    .pad-h1 h1 {
+      padding-bottom: 0.5em;
+    }
+
+    .pad-h3 h2,h3 {
+      padding-top: 0.5em;
+    }
+
+    .footnote {
+      position: absolute;
+      bottom: 1em;
+    }
+
+    .oops {
+      text-align: center;
+      color: red;
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    .good {
+      text-align: center;
+      color: green;
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    .meh {
+      text-align: center;
+      color: darkgoldenrod;
+      font-size: 2em;
+      font-weight: bold;      
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .overlay pre {
+      position: relative;
+      top: 30%;
+    }
+
+    .fin h1 {
+      top: 30%;
+    }
+
+  </style>
+</head>
+<body>
+<textarea id="source">
+
+class: center, middle
+
+# #deepthoughts about types
+
+HammerLab Lunch & Learn
+
+July 12, 2017
+
+Ryan Williams
+
+---
+
+# The hardest problem in bioinformatics
+
+--
+.pad-top[
+![](https://d3vv6lp55qjaqc.cloudfront.net/items/0P3v2p402Q2q3l0o2n3Q/Screen%20Shot%202017-07-12%20at%208.22.55%20AM.png)]
+
+--
+- also: some confusion around this in Isaac's farewell L&L, adding delly2 to biokepi+TTFI
+
+---
+layout: true
+class: pad-h3
+
+---
+
+# v0: no types
+--
+
+## Python
+--
+name: python_example
+
+```python
+
+def get_records(sample_id, sample_name):
+  …
+
+```
+--
+
+```python
+def main():
+
+  sample_id   = prompt("Sample ID: ")
+  sample_name = prompt("Sample name: ")
+
+  records = get_records(sample_id, sample_name)
+
+```
+---
+count: false
+template: python_example
+
+```python
+def main():
+
+  sample_id   = prompt("Sample ID: ")
+  sample_name = prompt("Sample name: ")
+
+  # oops!
+  records = get_records(`sample_name`, `sample_id`)
+
+```
+
+--
+.oops[
+OOPS ]
+
+---
+
+# v1: put some types on it
+--
+
+## Java
+--
+
+```java
+void getRecords(`String sampleId`, `String sampleName`) { 
+  … 
+}
+```
+--
+
+```java
+void main() {
+  String sampleId   = prompt("Sample ID: ");
+  String sampleName = prompt("Sample name: ");
+
+  // Still oops!
+  ArrayList<…> records = getRecords(`sampleName`, `sampleId`);
+}
+```
+
+--
+.oops[
+STILL OOPS ]
+
+---
+
+# v1.1: put some types on it
+--
+
+## Scala
+--
+
+```
+def getRecords(`sampleId: String`, `sampleName: String`): Unit = { 
+  … 
+}
+```
+--
+
+```
+def main(): Unit = {
+  val sampleId  : String = prompt("Sample ID: ")
+  val sampleName: String = prompt("Sample name: ")
+
+  // Still oops!
+  val records = getRecords(`sampleName`, `sampleId`)  
+}
+```
+
+--
+.oops[
+STILL OOPS ]
+
+---
+layout: true
+class: pad-h1
+
+---
+name: named-args
+# v2: named arguments
+
+--
+## Python
+--
+
+```python
+
+def get_records(sample_id, sample_name):
+  …
+
+```
+--
+
+```python
+def main():
+
+  sample_id   = prompt("Sample ID: ")
+  sample_name = prompt("Sample name: ")
+
+  # oops?
+  records = get_records(
+    `sample_id = sample_name`, 
+    `sample_name = sample_id`
+  )
+
+```
+
+--
+.meh[
+OOPS?]
+
+---
+template: named-args
+## Scala
+--
+
+```
+def getRecords(`sampleId: String`, `sampleName: String`): Unit = { 
+  … 
+}
+```
+--
+
+```
+def main(): Unit = {
+  val sampleId  : String = prompt("Sample ID: ")
+  val sampleName: String = prompt("Sample name: ")
+
+  // oops?
+  val records = getRecords(
+    `sampleId = sampleName`, 
+    `stringName = sampleId`
+  )
+}
+```
+
+--
+.meh[
+OOPS?]
+
+--
+
+.overlay[
+```
+      val calledAlleles =
+        discoverGermlineVariants(
+          partitionedReads,
+          args.sampleName,
+          kmerSize = args.kmerSize,
+          assemblyWindowRange = args.assemblyWindowRange,
+          minOccurrence = args.minOccurrence,
+          minAreaVaf = args.minAreaVaf / 100.0f,
+          reference = reference,
+          minMeanKmerQuality = args.minMeanKmerQuality,
+          minPhredScaledLikelihood = args.minLikelihood,
+          shortcutAssembly = args.shortcutAssembly
+        )
+```
+]
+
+---
+template: named-args
+## Java
+--
+.oops[
+OOPS]
+
+---
+name: kwargs
+# v3: kwargs
+
+--
+## Python
+
+--
+```python
+
+def get_records(`**kwargs`):
+  `sample_id`   = `kwargs.sample_id`
+  `sample_name` = `kwargs.sample_name`
+  …
+```
+--
+
+```python
+def main():
+
+  sample_id   = prompt("Sample ID: ")
+  sample_name = prompt("Sample name: ")
+
+  # oops?
+  records = get_records(**{ 
+    `'sample_id': sample_name`, 
+    `'sample_name', sample_id` 
+  })
+```
+
+--
+.meh[
+OOPS?]
+
+--
+- .flat[ Scala 🤔]
+
+--
+- .flat[ Java 🤔]
+
+---
+template: kwargs
+
+--
+name: JS-kwargs
+## Javascript
+--
+
+```javascript
+function get_records(`args`) {
+  let { `sample_id`, `sample_name` } = args;
+  …
+}
+```
+--
+
+```javascript
+function main() {
+
+  let sample_id   = prompt("Sample ID: ");
+  let sample_name = prompt("Sample name: ");
+
+  # 😎🤔
+  records = get_records({ `sample_name`, `sample_id` });
+}
+```
+--
+.good[
+😎🤔]
+
+---
+template: JS-kwargs
+
+```javascript
+let get_records = 
+  ({ `sample_id`, `sample_name` }) => {
+    …
+  }
+```
+
+```javascript
+function main() {
+
+  let sample_id   = prompt("Sample ID: ");
+  let sample_name = prompt("Sample name: ");
+
+  # 😎🤔
+  records = get_records({ `sample_name`, `sample_id` });
+}
+```
+
+.good[
+😎🤔]
+
+---
+# v4: "Value Classes"
+
+--
+```
+case class SampleId  (sampleId  : String)
+case class SampleName(sampleName: String)
+```
+
+--
+```
+def getRecords(sampleId: `SampleId`, sampleName: `SampleName`): Unit = { 
+  … 
+}
+```
+
+--
+```
+def main(): Unit = {
+  val sampleId  : SampleId   = SampleId(prompt("Sample ID: "))
+  val sampleName: SampleName = SampleName(prompt("Sample name: "))
+
+  // Compile error!
+  val records = getRecords(`sampleName`, `sampleId`)  
+}
+```
+
+--
+.good[
+COMPILE ERROR]
+
+---
+count: false
+
+# v4.1: Value Classes
+
+```
+class SampleId  (val sampleId  : String) `extends AnyVal`
+class SampleName(val sampleName: String) `extends AnyVal`
+```
+
+```
+def getRecords(sampleId: `SampleId`, sampleName: `SampleName`): Unit = { 
+  … 
+}
+```
+
+```
+def main(): Unit = {
+  val sampleId  : SampleId   = new SampleId(prompt("Sample ID: "))
+  val sampleName: SampleName = new SampleName(prompt("Sample name: "))
+
+  // Compile error!
+  val records = getRecords(`sampleName`, `sampleId`)  
+}
+```
+
+.good[
+COMPILE ERROR]
+
+.footnote[ 
+[scala-lang.org: Value Classes](http://docs.scala-lang.org/overviews/core/value-classes.html)]
+
+---
+# DRY
+
+```
+class `SampleId`  (val `sampleId`  : String) extends AnyVal
+class `SampleName`(val `sampleName`: String) extends AnyVal
+```
+
+```
+def getRecords(`sampleId`: `SampleId`, `sampleName`: `SampleName`): Unit = { 
+  … 
+}
+```
+
+```
+def main(): Unit = {
+  val `sampleId`  : `SampleId`   = new `SampleId`(prompt("Sample ID: "))
+  val `sampleName`: `SampleName` = new `SampleName`(prompt("Sample name: "))
+
+  // Compile error!
+  val records = getRecords(`sampleName`, `sampleId`)  
+}
+```
+
+---
+count: false
+
+# DRY
+```
+class `SampleId`  (val value: String) extends AnyVal
+class `SampleName`(val value: String) extends AnyVal
+```
+
+```
+def getRecords(`sampleId`: `SampleId`, `sampleName`: `SampleName`): Unit = { 
+  … 
+}
+```
+
+```
+def main(): Unit = {
+  val `sampleId`   = new `SampleId`  (prompt("Sample ID: "))
+  val `sampleName` = new `SampleName`(prompt("Sample name: "))
+
+  // Compile error!
+  val records = getRecords(`sampleName`, `sampleId`)  
+}
+```
+
+---
+# v5: Implicits
+
+--
+```
+case class SampleId  (value: String)
+case class SampleName(value: String)
+```
+
+--
+i: `implicit`
+body: …
+sampleIdParam: sampleId
+sampleNameParam: sampleName
+
+```
+def getRecords({{i}} {{sampleIdParam}}: SampleId, {{sampleNameParam}}: SampleName): Unit = { 
+  {{body}}
+}
+```
+
+--
+sampleIdVal:  sampleId
+sampleNameVal: sampleName
+
+```
+def main(): Unit = {
+  {{i}} val {{sampleIdVal}} = SampleId  (prompt("Sample ID: "))
+  {{i}} val {{sampleNameVal}} = SampleName(prompt("Sample name: "))
+
+  // No args! 😎
+  val records = getRecords
+}
+```
+
+--
+name: implicits-full-1
+
+.good[
+![](koolaid.jpg)
+]
+
+--
+i: implicit
+sampleIdVal: `_1`
+sampleNameVal: `_2`
+
+--
+sampleIdParam: `_3`
+sampleNameParam: `_4`
+body: // pass Sample{Id,Name} implicitly, or materialize with "implicitly"
+
+---
+# v6: best of all possible worlds
+
+--
+Imaginary language:
+
+--
+```
+class SampleId   { String }
+class SampleName { String }
+```
+
+--
+```
+def getRecords(SampleId, SampleName) {
+  Path("$SampleId/$SampleName")  // construct a filesystem path to read from
+  Lines                          // uses "implicit" Path
+  String⇒Record(…)             // define how to turn a string (line) into a record
+  Records                        // make 'Records' from {Lines, 'String⇒Record'}
+}
+```
+
+--
+```
+def main(): Unit = {
+  SampleId  (prompt("Sample ID: "))
+  SampleName(prompt("Sample name: "))
+
+  getRecords
+}
+```
+
+---
+# [Unison](http://unisonweb.org/2015-05-07/about.html)
+
+--
+- crazy scala/haskell person's attempt at a new programming ~~language~~ *paradigm* ![](mindblown.gif)
+
+--
+- typed by construction, default global namespace auto-completable by type
+
+--
+![](unison.gif)
+
+---
+# Observation: `import`s are a lie
+
+All of these programs are the same:
+
+```
+import java.net.URI
+import java.nio.file.{ Paths, Files }
+val path = Paths.get(new URI("gs://hammerlab/foo.txt"))
+val is = Files.newInputStream(path)
+```
+
+```
+val path = java.nio.file.Paths.get(new java.net.URI("gs://hammerlab/foo.txt"))
+val is = java.nio.file.Files.newInputStream(path)
+```
+
+```
+import java.net.URI
+import java.nio.file.Files.newInputStream
+import java.nio.file.Paths.get
+val path = get(new URI("gs://hammerlab/foo.txt"))
+val is = newInputStream(path)
+```
+
+```
+import java.net.{ URI ⇒ A }
+import java.nio.file.{ Paths ⇒ B, Files ⇒ C }
+val path = B.get(new A("gs://hammerlab/foo.txt"))
+val is = C.newInputStream(path)
+```
+
+---
+layout: false
+# Also: style guides
+
+No reason two people working in the same codebase couldn't simultaneously view the same block of code in the following two ways:
+
+```
+import java.nio.file.{ Files, Path }
+
+def mergeFiles(path1: Path, path2: Path, out: Path): Unit = {
+    if (Files.exists(path1) && Files.exists(path2)) {
+        Files.write(Files.read(path1) + Files.read(path2), out)
+    } else {
+        throw PathDoesntExistException()
+    }
+}
+```
+
+```
+import java.nio.file.{ Path => P }
+import java.nio.file.Files.{ exists, read, write }
+
+def mergeFiles(path1: P,
+               path2: P,
+               out: P): Unit =
+  if (
+    exists(path1) && 
+    exists(path2)
+  )
+    write(
+      read(path1) + read(path2),
+      out
+    )
+  else
+    throw PathDoesntExistException
+```
+
+---
+class: center, fin
+
+# 👍🏼
+
+
+</textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js">
+</script>
+<script>
+  var slideshow = remark.create({
+    countIncrementalSlides: false,
+    highlightLanguage: "scala",
+    highlightLines: true,
+    highlightSpans: true
+  });
+</script>
+</body>
+</html>
+
