@@ -265,14 +265,17 @@ OOPS?]
 template: kwargs
 
 --
-name: JS-kwargs
 ## Javascript
 --
+args: `args`
+body: let { `sample_id`, `sample_name` } = args;
+emoji: 😎 ✅
+passed: `sample_name`, `sample_id`
+fn_comment: 
 
 ```javascript
-function get_records(`args`) {
-  let { `sample_id`, `sample_name` } = args;
-  …
+function get_records({{args}}) {  {{fn_comment}}
+  {{body}}
 }
 ```
 --
@@ -283,50 +286,54 @@ function main() {
   let sample_id   = prompt("Sample ID: ");
   let sample_name = prompt("Sample name: ");
 
-  # 😎 ✅
-  records = get_records({ `sample_name`, `sample_id` });
+  // {{emoji}}
+  records = get_records({ {{passed}} });
 }
 ```
+
 --
-.good[
-😎 ✅]
+name: JS-kwargs
+
+.oops[
+{{emoji}}]
 
 ---
 template: JS-kwargs
+args: `{ sample_id, sample_name }`
+body: …
+fn_comment: // 🎉 🙌
 
-```javascript
-let get_records = 
-  ({ `sample_id`, `sample_name` }) => {
-    …
-  }
-```
+--
 
-```javascript
-function main() {
+- catch: still no compiler…
 
-  let sample_id   = prompt("Sample ID: ");
-  let sample_name = prompt("Sample name: ");
-
-  # 😎🤔
-  records = get_records({ `sample_name`, `sample_id` });
-}
-```
-
-.good[
-😎🤔]
+--
+args: { sample_id, sample_name }
+passed: sample_name`z`, sample_id
+emoji: OOPS
+fn_comment: 
 
 ---
-# v4: "Value Classes"
+heading: v4: "Value Classes"
+sampleId: case class SampleId  (sampleId  : String)
+sampleName: case class SampleName(sampleName: String)
+eqnew: =
+sampleIdParam: `SampleId`
+sampleNameParam: `SampleName`
+sampleIdArg: `sampleId`
+sampleNameArg: `sampleName`
+
+# {{heading}}
 
 --
 ```
-case class SampleId  (sampleId  : String)
-case class SampleName(sampleName: String)
+{{sampleId}}
+{{sampleName}}
 ```
 
 --
 ```
-def getRecords(sampleId: `SampleId`, sampleName: `SampleName`): Unit = { 
+def getRecords(sampleId: {{sampleIdParam}}, sampleName: {{sampleNameParam}}): Unit = { 
   … 
 }
 ```
@@ -334,46 +341,30 @@ def getRecords(sampleId: `SampleId`, sampleName: `SampleName`): Unit = {
 --
 ```
 def main(): Unit = {
-  val sampleId  : SampleId   = SampleId(prompt("Sample ID: "))
-  val sampleName: SampleName = SampleName(prompt("Sample name: "))
+  val sampleId  : SampleId   {{eqnew}} SampleId(prompt("Sample ID: "))
+  val sampleName: SampleName {{eqnew}} SampleName(prompt("Sample name: "))
 
   // Compile error!
-  val records = getRecords(`sampleName`, `sampleId`)  
+  val records = getRecords({{sampleIdArg}}, {{sampleNameArg}})  
 }
 ```
 
 --
+name: value-classes
+
 .good[
-COMPILE ERROR]
+🎉 COMPILE ERROR! 🎉]
 
 ---
-count: false
-
-# v4.1: Value Classes
-
-```
-class SampleId  (val sampleId  : String) `extends AnyVal`
-class SampleName(val sampleName: String) `extends AnyVal`
-```
-
-```
-def getRecords(sampleId: `SampleId`, sampleName: `SampleName`): Unit = { 
-  … 
-}
-```
-
-```
-def main(): Unit = {
-  val sampleId  : SampleId   = new SampleId(prompt("Sample ID: "))
-  val sampleName: SampleName = new SampleName(prompt("Sample name: "))
-
-  // Compile error!
-  val records = getRecords(`sampleName`, `sampleId`)  
-}
-```
-
-.good[
-COMPILE ERROR]
+template: value-classes
+heading: v4.1: Value Classes
+sampleId: class SampleId  (val sampleId  : String) `extends AnyVal`
+sampleName: class SampleName(val sampleName: String) `extends AnyVal`
+eqnew: = `new`
+sampleIdParam: SampleId
+sampleNameParam: SampleName
+sampleIdArg: sampleId
+sampleNameArg: sampleName
 
 .footnote[ 
 [scala-lang.org: Value Classes](http://docs.scala-lang.org/overviews/core/value-classes.html)]
@@ -449,13 +440,14 @@ def getRecords({{i}} {{sampleIdParam}}: SampleId, {{sampleNameParam}}: SampleNam
 ```
 
 --
-sampleIdVal:  sampleId
-sampleNameVal: sampleName
+name: implicits-full-1
+sampleIdVal:   sampleId   =
+sampleNameVal: sampleName =
 
 ```
 def main(): Unit = {
-  {{i}} val {{sampleIdVal}} = SampleId  (prompt("Sample ID: "))
-  {{i}} val {{sampleNameVal}} = SampleName(prompt("Sample name: "))
+  {{i}} val {{sampleIdVal}} SampleId  (prompt("Sample ID: "))
+  {{i}} val {{sampleNameVal}} SampleName(prompt("Sample name: "))
 
   // No args! 😎
   val records = getRecords
@@ -463,21 +455,57 @@ def main(): Unit = {
 ```
 
 --
-name: implicits-full-1
 
 .good[
 ![](koolaid.jpg)
 ]
 
---
+---
+template: implicits-full-1
 i: implicit
-sampleIdVal: `_1`
-sampleNameVal: `_2`
+sampleIdVal: `_1` =
+sampleNameVal: `_2` =
 
 --
 sampleIdParam: `_3`
 sampleNameParam: `_4`
 body: // pass Sample{Id,Name} implicitly, or materialize with "implicitly"
+
+--
+nothing: 
+- variable names: what are they good for? {{nothing}}
+
+--
+nothing: (nothing?)
+--
+nothing: (nothing? use types!)
+--
+name: scala-bullets
+- Scala implicits point toward new patterns
+
+--
+  - for dramatically reducing boilerplate
+
+--
+  - and certain kinds of errors
+
+--
+  - by eliminating parameter-passing!
+
+---
+template: scala-bullets
+
+--
+- But such patterns are a bit clunky in Scala today
+
+--
+  - {partial, multiple} implicit parameter lists
+
+--
+  - omit variable names altogether
+
+--
+  - actively being researched for Scala 3.x ("[Dotty](http://dotty.epfl.ch/)")
 
 ---
 # v6: best of all possible worlds
@@ -492,15 +520,26 @@ class SampleName { String }
 ```
 
 --
+path:
+lines:
+record:
+records:
 ```
 def getRecords(SampleId, SampleName) {
-  Path("$SampleId/$SampleName")  // construct a filesystem path to read from
-  Lines                          // uses "implicit" Path
-  String⇒Record(…)             // define how to turn a string (line) into a record
-  Records                        // make 'Records' from {Lines, 'String⇒Record'}
+  {{path}}
+  {{lines}}
+  {{record}}
+  {{records}}
 }
 ```
-
+--
+path: Path(SampleId / SampleName)  // construct a filesystem path to read from
+--
+lines: Lines                        // uses "implicit" Path, generates List of "Line"s
+--
+record: Line⇒Record(…)             // define how to turn a Line into a record
+--
+records: Records                      // make 'Records' from {Lines, 'String⇒Record'}
 --
 ```
 def main(): Unit = {
@@ -515,7 +554,7 @@ def main(): Unit = {
 # [Unison](http://unisonweb.org/2015-05-07/about.html)
 
 --
-- crazy scala/haskell person's attempt at a new programming ~~language~~ *paradigm* ![](mindblown.gif)
+- Scala/Haskell person's attempt at a new programming ~~language~~ *paradigm* ![](mindblown.gif)
 
 --
 - typed by construction, default global namespace auto-completable by type
@@ -524,9 +563,61 @@ def main(): Unit = {
 ![](unison.gif)
 
 ---
-# Observation: `import`s are a lie
+# `import`s are a lie
 
-All of these programs are the same:
+--
+- … in Java/Scala
+
+--
+  - can be side-effect-ful in Python, OCaml, JavaScript(?)
+
+--
+  - but specific names of imports generally fungible, in spirit
+
+--
+- wanted: better editor/view layers over underlying code
+
+--
+  - "style guides" ⟶ "style sheets (for code)"
+
+--
+    - "code style": that which relates to *form*, doesn't affect *function*
+
+--
+    - exactly the things that shouldn't need to be shared between developers, committed to version control, etc.
+
+--
+class: line-height-code
+
+.left-col[
+```
+import com.foo.Position
+def check(expected: List[Position]) {
+  expected should be(
+    Position( 1,  10) → false,
+    Position( 2, 107) →  true,
+    Position(10,  42) → false,
+    Position(22, 333) →  true
+  )
+}
+```]
+
+--
+.right-col[
+```
+import com.foo.{ Position ⇒ Pos }
+def check(expected: List[Pos]) {
+  expected should be(
+    Pos(1, 10) -> false,
+    Pos(2, 107) -> true,
+    Pos(10, 42) -> false,
+    Pos(22, 333) -> true
+  )
+}
+```]
+
+---
+All of these programs are the same, with different import/aliasing:
 
 ```
 import java.net.URI

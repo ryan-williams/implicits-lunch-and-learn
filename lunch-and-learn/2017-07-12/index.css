@@ -33,9 +33,32 @@ h1, h2, h3 {
   padding-top: 2em;
 }
 
+.line-height-code code {
+  line-height: 1.3em;
+}
+
 .footnote {
   position: absolute;
   bottom: 1em;
+}
+
+.left-col {
+  width: 48%;
+  float: left;
+}
+
+.right-col {
+  width: 48%;
+  float: right;
+}
+
+ul {
+  /*margin: 0;*/
+}
+
+li {
+  padding-top: .2em;
+  padding-bottom: .2em;
 }
 
 .oops {
