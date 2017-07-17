@@ -101,7 +101,7 @@ Ryan Williams
 
 --
 .pad-top[
-![](https://d3vv6lp55qjaqc.cloudfront.net/items/0P3v2p402Q2q3l0o2n3Q/Screen%20Shot%202017-07-12%20at%208.22.55%20AM.png)]
+![](guac.png)]
 
 --
 - also: some confusion around this in Isaac's farewell L&L, adding delly2 to biokepi+TTFI
@@ -640,6 +640,13 @@ import java.nio.file.{ Paths ⇒ B, Files ⇒ C }
 val path = B.get(new A("gs://hammerlab/foo.txt"))
 val is = C.newInputStream(path)
 ```
+
+---
+# Observation: `import`s are a lie
+
+Unambiguous basenames are nice when they exist, but reality is fully-qualified
+
+![Image of "Configuration" objects from many different libraries](configurations.png)
 
 ---
 layout: false
