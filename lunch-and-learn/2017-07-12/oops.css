@@ -1,0 +1,20 @@
+.oops {
+  text-align: center;
+  color: red;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.good {
+  text-align: center;
+  color: green;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.meh {
+  text-align: center;
+  color: darkgoldenrod;
+  font-size: 2em;
+  font-weight: bold;      
+}

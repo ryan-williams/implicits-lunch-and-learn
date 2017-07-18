@@ -2,10 +2,6 @@ body {
   font-family: sans-serif; 
 }
 
-.sinai-blue {
-  background-color: #15aced;
-}
-
 p {
   margin-top: 0;
   margin-bottom: 0;
@@ -42,6 +38,14 @@ h1, h2, h3 {
   bottom: 1em;
 }
 
+.subtitle-h3 h3 {
+  padding-top: 0em;
+}
+
+.subtitle-h3 pre {
+  padding-top: 0.8em;
+}
+
 .left-col {
   width: 48%;
   float: left;
@@ -52,51 +56,13 @@ h1, h2, h3 {
   float: right;
 }
 
-ul {
-  /*margin: 0;*/
-}
-
 li {
   padding-top: .2em;
   padding-bottom: .2em;
 }
 
-.oops {
-  text-align: center;
-  color: red;
-  font-size: 2em;
-  font-weight: bold;
-}
-
-.good {
-  text-align: center;
-  color: green;
-  font-size: 2em;
-  font-weight: bold;
-}
-
-.meh {
-  text-align: center;
-  color: darkgoldenrod;
-  font-size: 2em;
-  font-weight: bold;      
-}
-
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.overlay pre {
-  position: relative;
-  top: 50%;
-  transform: translate(0%, -50%);
-  width: 90%;
-  margin: auto;
+.remark-code-span-highlighted {
+  padding: 0;
 }
 
 .fin h1 {
@@ -107,21 +73,13 @@ li {
   padding-bottom: 2em;
 }
 
-.title-bg-sinai {
-  background-image: url(bg-sinai-front.png);
-  background-size: cover;
-}
-
-.main-slide {
-  background-image: url(bg-sinai-main.png);
-  background-size: cover; 
+.sinai-blue {
+  background-color: #15aced;
 }
 
 .title-bg-sinai-blue {
   top: 0;
   position: absolute;
-  /*width: 100%;*/
-  /*height: 100%;*/
   background-color: #15aced;
   clip-path: polygon(0 0, 90% 0, 50% 98%, 0 98%);
 }

@@ -1,0 +1,9 @@
+.title-bg-sinai {
+  background-image: url(bg-sinai-front.png);
+  background-size: cover;
+}
+
+.main-slide {
+  background-image: url(bg-sinai-main.png);
+  background-size: cover; 
+}

@@ -563,135 +563,153 @@ def main(): Unit = {
 ![](unison.gif)
 
 ---
-# `import`s are a lie
+name: form-function
+# Aside: separating code form, function
 
 --
-- … in Java/Scala
+- "coding style": that which relates to *form*, doesn't affect *function*
 
 --
-  - can be side-effect-ful in Python, OCaml, JavaScript(?)
+- Two developers need not view same code in same way
 
 --
-  - but specific names of imports generally fungible, in spirit
+  - "style guides" ⟶ "style-sheets (for code)"
 
 --
-- wanted: better editor/view layers over underlying code
+  - stored in local editor configs
 
 --
-  - "style guides" ⟶ "style sheets (for code)"
+  - not managed by version control
 
 --
-    - "code style": that which relates to *form*, doesn't affect *function*
+  - can differ between developers in same codebase
 
 --
-    - exactly the things that shouldn't need to be shared between developers, committed to version control, etc.
+- Exists today:
 
 --
-class: line-height-code
+  - syntax highlighting
 
-.left-col[
+--
+  - code-block folding
+
+--
+- Wanted:
+
+--
+  - comment/doc rendering
+
+--
+  - `import` statements
+
+--
+  - whitespace
+
+--
+  - exactly the things that shouldn't need to be shared between developers, committed to version control, etc.
+
+---
+name: code-cols-base
+layout: true
+class: line-height-code, code-cols-slide, main-slide
+sp1: ( 1
+sp2: ( 2
+cs1: ,   1
+cs3: ,  3
+cs4: ,   4
+at: →  t
+a: →
+da: ->
+Position: Position
+Pos: Pos
+expectedLeft: expected
+expectedRight: expected
+
+# Aside: separating code form, function
+
+{{content}}
+
+.left-code-col.code-col[
 ```
-import com.foo.Position
-def check(expected: List[Position]) {
-  expected should be(
-    Position( 1,  10) → false,
-    Position( 2, 107) →  true,
-    Position(10,  42) → false,
-    Position(22, 333) →  true
+import com.foo.{{Position}}
+def check({{expectedLeft}}: List[{{Position}}]) {
+  {{expectedLeft}} should be(
+    {{Position}}{{sp1}}{{cs1}}0) {{a}} false,
+    {{Position}}{{sp2}}, 1107) {{at}}rue,
+    {{Position}}(10{{cs4}}2) {{a}} false,
+    {{Position}}(22{{cs3}}33) {{at}}rue
   )
 }
 ```]
 
---
-.right-col[
+.right-code-col.code-col[
 ```
-import com.foo.{ Position ⇒ Pos }
-def check(expected: List[Pos]) {
-  expected should be(
-    Pos(1, 10) -> false,
-    Pos(2, 107) -> true,
-    Pos(10, 42) -> false,
-    Pos(22, 333) -> true
+import com.foo.{ Position ⇒ {{Pos}} }
+def check({{expectedRight}}: List[{{Pos}}]) {
+  {{expectedRight}} should be(
+    {{Pos}}(1, 10) {{da}} false,
+    {{Pos}}(2, 107) {{da}} true,
+    {{Pos}}(10, 42) {{da}} false,
+    {{Pos}}(22, 333) {{da}} true
   )
 }
 ```]
 
 ---
-All of these programs are the same, with different import/aliasing:
+template: code-cols-base
+name: code-cols
+Consider the following two equivalent code blocks:
 
-```
-import java.net.URI
-import java.nio.file.{ Paths, Files }
-val path = Paths.get(new URI("gs://hammerlab/foo.txt"))
-val is = Files.newInputStream(path)
-```
+--
+class: alternate-syntax-colors
 
-```
-val path = java.nio.file.Paths.get(new java.net.URI("gs://hammerlab/foo.txt"))
-val is = java.nio.file.Files.newInputStream(path)
-```
+--
+- we don't save syntax-highlighting colors to disk / version-control
 
-```
-import java.net.URI
-import java.nio.file.Files.newInputStream
-import java.nio.file.Paths.get
-val path = get(new URI("gs://hammerlab/foo.txt"))
-val is = newInputStream(path)
-```
+--
+- developers can configure them independently from one another
 
-```
-import java.net.{ URI ⇒ A }
-import java.nio.file.{ Paths ⇒ B, Files ⇒ C }
-val path = B.get(new A("gs://hammerlab/foo.txt"))
-val is = C.newInputStream(path)
-```
+--
+- why not the same for:
 
----
-# Observation: `import`s are a lie
+--
+template: code-cols
+sp1: (` `1
+sp2: (` `2
+cs1: , `  `1
+cs3: , ` `3
+cs4: , `  `4
+at: → ` `t
+  - whitespace
 
-.pad[
-Unambiguous basenames are nice when they exist, but reality is fully-qualified]
+--
+sp1: ( 1
+sp2: ( 2
+cs1: ,   1
+cs3: ,  3
+cs4: ,   4
+at: `→`  t
+a: `→`
+da: `->`
+  - unicode abbreviations
 
-![Image of "Configuration" objects from many different libraries](configurations.png)
+--
+at: →  t
+a: →
+da: ->
+Position: `Position`
+Pos: `Pos`
+  - arbitrary import names
+
+--
+Position: Position
+Pos: Pos
+expectedLeft: `expected`
+expectedRight: `exp`
+  - stretch: variable names
 
 ---
 layout: false
-# Also: style guides
-
-No reason two people working in the same codebase couldn't simultaneously view the same block of code in the following two ways:
-
-```
-import java.nio.file.{ Files, Path }
-
-def mergeFiles(path1: Path, path2: Path, out: Path): Unit = {
-    if (Files.exists(path1) && Files.exists(path2)) {
-        Files.write(Files.read(path1) + Files.read(path2), out)
-    } else {
-        throw PathDoesntExistException()
-    }
-}
-```
-
-```
-import java.nio.file.{ Path => P }
-import java.nio.file.Files.{ exists, read, write }
-
-def mergeFiles(path1: P,
-               path2: P,
-               out: P): Unit =
-  if (
-    exists(path1) && 
-    exists(path2)
-  )
-    write(
-      read(path1) + read(path2),
-      out
-    )
-  else
-    throw PathDoesntExistException
-```
-
----
-class: center, fin
+class: center, middle, fin, main-slide
 
 # 👍🏼
