@@ -27,11 +27,11 @@ class: pad-h2-bottom
 
 --
 .img-container[
-![Github screenshot from PR fixing normal/tumor arugument mixup](guac.png)]
+![Github screenshot from PR fixing normal/tumor arugument mixup](img/guac.png)]
 
 --
 .img-container[
-![Github screenshot showing normal/tumor argument mixup diff](github-normal-tumor-diff.png)]
+![Github screenshot showing normal/tumor argument mixup diff](img/github-normal-tumor-diff.png)]
 
 ---
 template: hardest-problem
@@ -157,6 +157,7 @@ STILL OOPS ]
 
 ---
 name: named-args
+class: line-height-code-12
 # v2: named arguments
 
 --
@@ -248,9 +249,9 @@ def main(): Unit = {
 
 --
 class: meh-comment
-comment: // oops?
+comment: // same ≈oops
 .banner.meh[
-OOPS?]
+≈OOPS]
 
 ---
 template: scala-named-args
@@ -340,7 +341,6 @@ comment: # oops?
 OOPS?]
 
 --
-class: flatten-unify-ul
 - .flat[ Scala 🤔]
 
 --
@@ -380,19 +380,19 @@ function main() {
 --
 name: JS-kwargs
 class: good-comment
-comment: // 😎 ✅
+comment: // 😎 ✅ does the right thing!
 emoji: 😎 ✅
 
 .banner.oops[
 {{emoji}}]
 
 ---
-template: JS-kwargs
 name: js-kwargs-commentary
-class: flatten-unify-ul
+template: JS-kwargs
+count: false
 args: `{ sample_id, sample_name }`
 body: …
-fn_comment: // 🎉 🙌
+fn_comment: // 🎉 🙌 fixes order for you!
 
 --
 emoji: 
@@ -411,6 +411,7 @@ class: highlight-inline-code
 
 ---
 template: js-kwargs-commentary
+count: false
 args: { sample_id, sample_name }
 passed: sample_name, sample_id
 emoji: &nbsp;
@@ -429,7 +430,7 @@ fn_comment:
 
 ---
 class: line-height-code-11
-heading: v4: "Value Classes"
+heading: v4: Scala "Value Classes"
 sampleId: case class `SampleId`  (sampleId  : String)
 sampleName: case class `SampleName`(sampleName: String)
 
@@ -488,7 +489,7 @@ comment: // Compile error!
 🎉 COMPILE ERROR! 🎉]
 
 --
-heading: v4.1: Value Classes
+heading: v4.1: Scala Value Classes
 sampleId: class SampleId  (val sampleId  : String) `extends AnyVal`
 sampleName: class SampleName(val sampleName: String) `extends AnyVal`
 eqnew: = `new`
@@ -546,6 +547,7 @@ def main(): Unit = {
 ---
 name: dry-deduped
 template: dry-base
+count: false
 sampleId:   value:
 sampleName: value:
 sampleIdVal:   `sampleId`   =
@@ -610,12 +612,12 @@ getRecords: val records = getRecords
 --
 
 .koolaid[
-![](koolaid.jpg)
+![Kool-Aid man bursting through wall](img/koolaid.jpg)
 ]
 
 ---
-template: implicits-full-1
 name: implicits-bullets-1
+template: implicits-full-1
 count: false
 i: implicit
 --
@@ -626,7 +628,7 @@ sampleNameParam: `sampleName`
 - variable names: what are they good for?
 
 --
-  - ≈nothing?
+  - ≈ nothing?
 
 --
 sampleIdVal: `_1` =
@@ -634,13 +636,14 @@ sampleNameVal: `_2` =
 --
 sampleIdParam: `_3`
 sampleNameParam: `_4`
-body: // pass Sample{Id,Name} implicitly, or materialize with "implicitly"
+--
+body: // pass Sample{Id,Name} implicitly (or materialize with "implicitly" function)
 --
   - put that info in types!
 
 ---
-template: implicits-bullets-1
 name: implicits-bullets-2
+template: implicits-bullets-1
 count: false
 sampleIdVal: _1 =
 sampleNameVal: _2 =
@@ -715,6 +718,7 @@ Scala implicits point toward new patterns{{c}}
 
 ---
 template: scala-bullets
+count: false
 c:
 clunky: 
 - but… {{clunky}}
@@ -796,7 +800,7 @@ default2: (by default)
 # Aside: [Unison](http://unisonweb.org/2015-05-07/about.html)
 
 --
-- Scala/Haskell person's attempt at a new programming ~~language~~ *paradigm* ![](mindblown.gif)
+- Scala/Haskell person's attempt at a new programming ~~language~~ *paradigm* !["Mind blown" image](img/mindblown.gif)
 
 --
 - typed by construction, default global namespace auto-completable by type
@@ -885,6 +889,7 @@ folded: `…` )
 
 ---
 template: pre-folding
+count: false
 {{codefolding}}
 
 --
