@@ -32,8 +32,6 @@ h1, h2, h3 {
   margin-bottom: 0.1em;
 }
 
-.remark-slide-number { bottom: 1em; }
-
 ol {
   margin: 0.7em 0;
 }
@@ -42,6 +40,8 @@ ul {
   margin: 0;
   line-height: 1.5em;
 }
+
+.remark-slide-number { bottom: 1em; }
 
 .pad-h2-bottom h2 {
   padding-bottom: 0.1em;
@@ -80,12 +80,4 @@ ul {
   bottom: 4em;
   font-style: italic;
   font-size: 1.5em;
-}
-
-.fin h1 {
-  top: 30%;
-}
-
-.pad {
-  padding-bottom: 2em;
 }

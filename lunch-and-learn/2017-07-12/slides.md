@@ -937,6 +937,6 @@ class: ul-no-margin-bottom
 
 ---
 layout: false
-class: center, middle, fin, main-slide
+class: center, middle, main-slide
 
 # 🏁
