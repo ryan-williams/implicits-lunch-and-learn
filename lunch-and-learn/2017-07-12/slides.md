@@ -251,7 +251,7 @@ def main(): Unit = {
 class: meh-comment
 comment: // same ≈oops
 .banner.meh[
-≈OOPS]
+same: ≈OOPS]
 
 ---
 template: scala-named-args
@@ -305,6 +305,7 @@ OOPS]
 
 ---
 name: kwargs
+class: line-height-code-12
 # v3: kwargs
 
 --
@@ -339,12 +340,6 @@ class: meh-comment
 comment: # oops?
 .banner.meh[
 OOPS?]
-
---
-- .flat[ Scala 🤔]
-
---
-- .flat[ Java 🤔]
 
 ---
 template: kwargs
@@ -445,11 +440,13 @@ sampleName: case class `SampleName`(sampleName: String)
 --
 sampleId: case class SampleId  (sampleId  : String)
 sampleName: case class SampleName(sampleName: String)
+sampleIdParamName: sampleId
 sampleIdParam: `SampleId`
+sampleNameParamName: sampleName
 sampleNameParam: `SampleName`
 
 ```
-def getRecords(sampleId: {{sampleIdParam}}, sampleName: {{sampleNameParam}}): Unit = { 
+def getRecords({{sampleIdParamName}}: {{sampleIdParam}}, {{sampleNameParamName}}: {{sampleNameParam}}): Unit = { 
   … 
 }
 ```
@@ -457,17 +454,18 @@ def getRecords(sampleId: {{sampleIdParam}}, sampleName: {{sampleNameParam}}): Un
 --
 sampleIdParam: SampleId
 sampleNameParam: SampleName
-sampleIdTypeDecl: `SampleId`
+sampleIdTypeDecl: `SampleId`  (
 sampleNameTypeDecl: `SampleName`
-eqnew: =
 firstArg: sampleId
 secondArg: sampleName
+sampleIdVar:   sampleId   =
+sampleNameVar: sampleName =
 comment: 
 
 ```
 def main(): Unit = {
-  val sampleId   {{eqnew}} {{sampleIdTypeDecl}}(prompt("Sample ID: "))
-  val sampleName {{eqnew}} {{sampleNameTypeDecl}}(prompt("Sample name: "))
+  val {{sampleIdVar}} {{sampleIdTypeDecl}}prompt("Sample ID: "))
+  val {{sampleNameVar}} {{sampleNameTypeDecl}}(prompt("Sample name: "))
 
   {{comment}}
   val records = getRecords({{firstArg}}, {{secondArg}})  
@@ -479,26 +477,29 @@ name: value-classes
 class: good-comment
 sampleIdParam: `SampleId`
 sampleNameParam: `SampleName`
-sampleIdTypeDecl: SampleId
+sampleIdTypeDecl: SampleId  (
 sampleNameTypeDecl: SampleName
 firstArg: `sampleName`
 secondArg: `sampleId`
 comment: // Compile error!
+banner: 🎉 COMPILE ERROR! 🎉
 
 .banner.good[
-🎉 COMPILE ERROR! 🎉]
+{{banner}}]
 
 --
+name: value-classes-2
 heading: v4.1: Scala Value Classes
 sampleId: class SampleId  (val sampleId  : String) `extends AnyVal`
 sampleName: class SampleName(val sampleName: String) `extends AnyVal`
-eqnew: = `new`
+sampleIdVar:   sampleId   = `new`
+sampleNameVar: sampleName = `new`
 sampleIdParam: SampleId
 sampleNameParam: SampleName
 firstArg: sampleName
 secondArg: sampleId
-
-- [scala-lang.org: Value Classes](http://docs.scala-lang.org/overviews/core/value-classes.html)
+firstBullet: - [scala-lang.org: Value Classes](http://docs.scala-lang.org/overviews/core/value-classes.html)
+{{firstBullet}}
 
 --
 - unboxed at runtime; compiler unrolls to enclosed "value"
@@ -510,55 +511,61 @@ secondArg: sampleId
 - `case class`es often easier to use
 
 ---
-name: dry-base
-class: line-height-code-11, good-comment
-sampleId:   `sampleId`  :
-sampleName: `sampleName`:
-sampleIdVal:   `sampleId`  : `SampleId`   =
-sampleNameVal: `sampleName`: `SampleName` =
-
-# DRY
-
-```
-class `SampleId`  (val {{sampleId}} String) extends AnyVal
-class `SampleName`(val {{sampleName}} String) extends AnyVal
-```
-
-```
-def getRecords(`sampleId`: `SampleId`, `sampleName`: `SampleName`): Unit = { 
-  … 
-}
-```
-
-```
-def main(): Unit = {
-  val {{sampleIdVal}} new `SampleId`(prompt("Sample ID: "))
-  val {{sampleNameVal}} new `SampleName`(prompt("Sample name: "))
-
-  // Compile error!
-  val records = getRecords(`sampleName`, `sampleId`)  
-}
-```
+template: value-classes-2
+sampleId: class SampleId  (val sampleId  : String) extends AnyVal
+sampleName: class SampleName(val sampleName: String) extends AnyVal
+sampleIdVar:   sampleId   = new
+sampleNameVar: sampleName = new
+heading: DRY
+banner:
+firstBullet:
+--
+Redundancy check:
 
 --
-- `/SampleId/i`: 8x
-- `/SampleName/i`: 8x
+sampleId: class `SampleId`  (val `sampleId`  : String) extends AnyVal
+sampleIdParamName: `sampleId`
+sampleIdParam: `SampleId`
+sampleIdVar:   `sampleId`   = new
+sampleIdTypeDecl: `SampleId`  (
+secondArg: `sampleId`
+- `/SampleId/i`: 7x
 
----
+--
+sampleId: class SampleId  (val sampleId  : String) extends AnyVal
+sampleIdParamName: sampleId
+sampleIdParam: SampleId
+sampleIdVar:   sampleId   = new
+sampleIdTypeDecl: SampleId  (
+secondArg: sampleId
+sampleName: class `SampleName`(val `sampleName`: String) extends AnyVal
+sampleNameParamName: `sampleName`
+sampleNameParam: `SampleName`
+sampleNameVar: `sampleName` = new
+sampleNameTypeDecl: `SampleName`
+firstArg: `sampleName`
+- `/SampleName/i`: 7x
+
+--
 name: dry-deduped
-template: dry-base
-count: false
-sampleId:   value:
-sampleName: value:
+sampleId: class `SampleId`  (val value: String) extends AnyVal
+sampleIdParamName: `sampleId`
+sampleIdParam: `SampleId`
+sampleIdVar:   `sampleId`   = new
+sampleIdTypeDecl: `SampleId`  (
+secondArg: `sampleId`
+sampleName: class `SampleName`(val value: String) extends AnyVal
 sampleIdVal:   `sampleId`   =
 sampleNameVal: `sampleName` =
+`AnyVal` field name redundant, convert to "`value`"…
 
 --
 - `/SampleId/i`: 6x
 - `/SampleName/i`: 6x
 
 --
-- can we do better?
+
+Can we do better?
 
 ---
 class: line-height-code-11

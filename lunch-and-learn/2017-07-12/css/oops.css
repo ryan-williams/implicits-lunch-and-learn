@@ -26,17 +26,17 @@
 }
 
 .good-comment .hljs-comment {
-  color: green;
+  color: green !important;
   font-weight: bold;
 }
 
 .meh-comment .hljs-comment {
-  color: darkgoldenrod;
+  color: darkgoldenrod !important;
   font-weight: bold;
 }
 
 .oops-comment .hljs-comment {
-  color: red;
+  color: red !important;
   font-weight: bold;
 }
 

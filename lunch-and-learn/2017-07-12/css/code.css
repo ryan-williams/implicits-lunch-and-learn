@@ -2,7 +2,7 @@
 .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
 
 code {
-  margin-bottom: 0.8em;
+  margin-bottom: 0.4em;
 }
 
 .remark-code-span-highlighted {
@@ -39,7 +39,7 @@ code {
 
 pre {
   margin-top: 0.8em;
-  margin-bottom: 0.6em;
+  margin-bottom: 0.4em;
 }
 
 .hide-line-10 .remark-code-line:nth-child(10) {
@@ -59,7 +59,7 @@ pre {
 }
 
 .hljs-comment {
-  color: green;
+  color: green !important;
 }
 
 .normal-comment-weight .hljs-comment {
