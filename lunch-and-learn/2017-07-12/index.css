@@ -7,6 +7,16 @@ p {
   margin-bottom: 0;
 }
 
+.remark-slide-content > p {
+  /*margin-bottom: 0.2em;*/
+  line-height: 1.5em;
+}
+
+.remark-slide-content > div {
+  /*margin-bottom: 0.2em;*/
+  line-height: 1.5em;
+}
+
 h1 {
   margin-top: 0;
   margin-bottom: 0.3em;
@@ -17,25 +27,66 @@ h2 {
   margin-bottom: 0.3em;
 }
 
+.unison-gif {
+  background-image: url(unison.gif);
+  border: 1px solid grey;
+  position: absolute;
+  bottom: 3em;
+  width: 70%;
+  height: 50%;
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+
 h1, h2, h3 {
   font-family: 'Yanone Kaffeesatz';
   font-weight: normal;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
 }
-.remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
 
 .remark-slide-number { bottom: 18px; }
 
-.pad-top {
-  padding-top: 2em;
+.pad-h2-bottom h2 {
+  padding-bottom: 0.1em;
 }
 
-.line-height-code code {
-  line-height: 1.3em;
+.img-container {
+  text-align: center;
+}
+
+.img-container img {
+    max-width: 93%;
+    border: 1px solid black;
+    margin-bottom: 0.2em;
+}
+
+ol {
+  margin: 0.7em 0;
+}
+
+ul {
+  margin: 0;
+  line-height: 1.5em;
+}
+
+.clear-both {
+  clear: both;
 }
 
 .footnote {
   position: absolute;
-  bottom: 1em;
+  bottom: 1.1em;
+}
+
+.floating-bottom-right {
+  position: absolute;
+  left: 50%;
+  width: 30%;
+  text-align: center;
+  bottom: 4em;
+  font-style: italic;
+  font-size: 1.5em;
 }
 
 .subtitle-h3 h3 {
@@ -56,15 +107,6 @@ h1, h2, h3 {
   float: right;
 }
 
-li {
-  padding-top: .2em;
-  padding-bottom: .2em;
-}
-
-.remark-code-span-highlighted {
-  padding: 0;
-}
-
 .fin h1 {
   top: 30%;
 }
@@ -82,4 +124,8 @@ li {
   position: absolute;
   background-color: #15aced;
   clip-path: polygon(0 0, 90% 0, 50% 98%, 0 98%);
+}
+
+.hljs-default .hljs-comment {
+  color: green;
 }

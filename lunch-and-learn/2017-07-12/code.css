@@ -1,0 +1,43 @@
+
+.remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+
+code {
+  margin-bottom: 0.8em;
+}
+
+.remark-code-span-highlighted {
+  padding: 0;
+}
+
+.highlight-inline-code .remark-inline-code {
+  background-color: rgba(255,255,0,0.5);
+}
+
+.line-height-code-11 code {
+  line-height: 1.1em;
+}
+
+.line-height-code-11 .remark-code-line {
+  min-height: 1.1em;
+}
+
+.line-height-code-12 code {
+  line-height: 1.2em;
+}
+
+.line-height-code-12 .remark-code-line {
+  min-height: 1.2em;
+}
+
+.line-height-code-13 code {
+  line-height: 1.3em;
+}
+
+.line-height-code-13 .remark-code-line {
+  min-height: 1.3em;
+}
+
+pre {
+  margin-top: 0.8em;
+  margin-bottom: 0.6em;
+}

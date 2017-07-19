@@ -1,11 +1,15 @@
 layout: true
 name: title-slide
-class: center, middle, title-bg-sinai
+class: middle, title-slide
 
 ---
-# #deepthoughts about types
+# The trouble with argument-passing
+
+<br/>
 
 HammerLab Lunch & Learn
+
+<br/>
 
 July 12, 2017
 
@@ -17,32 +21,54 @@ name: main-slides
 class: main-slide
 
 ---
-
-# The hardest problem in bioinformatics
-
---
-.pad-top[
-![](guac.png)]
+name: hardest-problem
+class: pad-h2-bottom
+## The hardest problem in bioinformatics
 
 --
-- also: some confusion around this in Isaac's farewell L&L, adding delly2 to biokepi+TTFI
+.img-container[
+![Github screenshot from PR fixing normal/tumor arugument mixup](guac.png)]
+
+--
+.img-container[
+![Github screenshot showing normal/tumor argument mixup diff](github-normal-tumor-diff.png)]
 
 ---
+template: hardest-problem
+--
+- don't mix up order of arguments
 
+--
+- in particular, normal/tumor samples
+
+---
+layout: false
+class: divider-slide, middle
+# Toy example, various languages
+
+---
+layout: true
+class: main-slide
+
+---
 # v0: no types
 --
 
 ## Python
 --
 name: python_example
+param1: sample_id
+param2: sample_name
 
 ```python
-
-def get_records(sample_id, sample_name):
+def get_records({{param1}}, {{param2}}):
   …
 
 ```
 --
+comment: 
+first_arg: sample_id
+second_arg: sample_name
 
 ```python
 def main():
@@ -50,26 +76,19 @@ def main():
   sample_id   = prompt("Sample ID: ")
   sample_name = prompt("Sample name: ")
 
-  records = get_records(sample_id, sample_name)
+  {{comment}}
+  records = get_records({{first_arg}}, {{second_arg}})
 
 ```
----
-count: false
-template: python_example
-
-```python
-def main():
-
-  sample_id   = prompt("Sample ID: ")
-  sample_name = prompt("Sample name: ")
-
-  # oops!
-  records = get_records(`sample_name`, `sample_id`)
-
-```
-
 --
-.oops[
+param1: `sample_id`
+param2: `sample_name`
+first_arg: `sample_name`
+second_arg: `sample_id`
+--
+class: oops-comment
+comment: # oops!
+.banner.oops[
 OOPS ]
 
 ---
@@ -86,19 +105,22 @@ void getRecords(`String sampleId`, `String sampleName`) {
 }
 ```
 --
+comment: 
 
 ```java
 void main() {
   String sampleId   = prompt("Sample ID: ");
   String sampleName = prompt("Sample name: ");
 
-  // Still oops!
+  {{comment}}
   ArrayList<…> records = getRecords(`sampleName`, `sampleId`);
 }
 ```
 
 --
-.oops[
+class: oops-comment
+comment: // Still oops!
+.banner.oops[
 STILL OOPS ]
 
 ---
@@ -115,19 +137,22 @@ def getRecords(`sampleId: String`, `sampleName: String`): Unit = {
 }
 ```
 --
+comment: 
 
 ```
 def main(): Unit = {
   val sampleId  : String = prompt("Sample ID: ")
   val sampleName: String = prompt("Sample name: ")
 
-  // Still oops!
+  {{comment}}
   val records = getRecords(`sampleName`, `sampleId`)  
 }
 ```
 
 --
-.oops[
+class: oops-comment
+comment: // Still oops!
+.banner.oops[
 STILL OOPS ]
 
 ---
@@ -145,6 +170,7 @@ def get_records(sample_id, sample_name):
 
 ```
 --
+comment: 
 
 ```python
 def main():
@@ -152,7 +178,7 @@ def main():
   sample_id   = prompt("Sample ID: ")
   sample_name = prompt("Sample name: ")
 
-  # oops?
+  {{comment}}
   records = get_records(
     `sample_id = sample_name`, 
     `sample_name = sample_id`
@@ -161,11 +187,14 @@ def main():
 ```
 
 --
-.meh[
+class: meh-comment
+comment: # oops?
+.banner.meh[
 OOPS?]
 
 ---
 template: named-args
+name: scala-named-args
 ## Scala
 --
 
@@ -175,13 +204,14 @@ def getRecords(`sampleId: String`, `sampleName: String`): Unit = {
 }
 ```
 --
+comment: 
 
 ```
 def main(): Unit = {
   val sampleId  : String = prompt("Sample ID: ")
   val sampleName: String = prompt("Sample name: ")
 
-  // oops?
+  {{comment}}
   val records = getRecords(
     `sampleId = sampleName`, 
     `stringName = sampleId`
@@ -190,35 +220,59 @@ def main(): Unit = {
 ```
 
 --
-.meh[
+class: meh-comment
+comment: // oops?
+.banner.meh[
 OOPS?]
 
---
+---
+template: scala-named-args
+[Seen in the wild](https://github.com/hammerlab/guacamole/blob/9d330aeb3a7a040c174b851511f19b42d7717508/src/main/scala/org/hammerlab/guacamole/commands/GermlineAssemblyCaller.scala#L63-L75):
 
-.overlay[
+--
+minAreaVaf: minAreaVaf = args.minAreaVaf / 100.0f
+discoverGermlineVariants: discoverGermlineVariants
 ```
-      val calledAlleles =
-        discoverGermlineVariants(
-          partitionedReads,
-          args.sampleName,
-          kmerSize = args.kmerSize,
-          assemblyWindowRange = args.assemblyWindowRange,
-          minOccurrence = args.minOccurrence,
-          minAreaVaf = args.minAreaVaf / 100.0f,
-          reference = reference,
-          minMeanKmerQuality = args.minMeanKmerQuality,
-          minPhredScaledLikelihood = args.minLikelihood,
-          shortcutAssembly = args.shortcutAssembly
-        )
+val calledAlleles =
+  {{discoverGermlineVariants}}(
+    partitionedReads,
+    args.sampleName,
+    kmerSize = args.kmerSize,
+    assemblyWindowRange = args.assemblyWindowRange,
+    minOccurrence = args.minOccurrence,
+    {{minAreaVaf}},
+    reference = reference,
+    minMeanKmerQuality = args.minMeanKmerQuality,
+    minPhredScaledLikelihood = args.minLikelihood,
+    shortcutAssembly = args.shortcutAssembly
+  )
 ```
-]
+--
+Two (trivial) things happening here:
+
+--
+minAreaVaf: `minAreaVaf = args.minAreaVaf / 100.0f`
+1. convert a percentage to a `Double`
+
+--
+minAreaVaf: minAreaVaf = args.minAreaVaf / 100.0f
+discoverGermlineVariants: `discoverGermlineVariants`
+2. call .highlight-inline-code[`discoverGermlineVariants`] with obvious arguments
+
+
+--
+boilerplate: 
+but you'd hardly know by looking at it! {{boilerplate}}
+
+--
+boilerplate: So much boilerplate!
 
 ---
 template: named-args
 --
 ## Java
 --
-.oops[
+.banner.oops[
 OOPS]
 
 ---
@@ -237,6 +291,7 @@ def get_records(`**kwargs`):
   …
 ```
 --
+comment: 
 
 ```python
 def main():
@@ -244,7 +299,7 @@ def main():
   sample_id   = prompt("Sample ID: ")
   sample_name = prompt("Sample name: ")
 
-  # oops?
+  {{comment}}
   records = get_records(
     `sample_id = sample_name`, 
     `sample_name = sample_id` 
@@ -252,10 +307,13 @@ def main():
 ```
 
 --
-.meh[
+class: meh-comment
+comment: # oops?
+.banner.meh[
 OOPS?]
 
 --
+class: flatten-unify-ul
 - .flat[ Scala 🤔]
 
 --
@@ -267,9 +325,10 @@ template: kwargs
 --
 ## Javascript
 --
+class: line-height-code-13
 args: `args`
 body: let { `sample_id`, `sample_name` } = args;
-emoji: 😎 ✅
+comment: 
 passed: `sample_name`, `sample_id`
 fn_comment: 
 
@@ -286,42 +345,66 @@ function main() {
   let sample_id   = prompt("Sample ID: ");
   let sample_name = prompt("Sample name: ");
 
-  // {{emoji}}
+  {{comment}}
   records = get_records({ {{passed}} });
 }
 ```
 
 --
 name: JS-kwargs
+class: good-comment
+comment: // 😎 ✅
+emoji: 😎 ✅
 
-.oops[
+.banner.oops[
 {{emoji}}]
 
 ---
 template: JS-kwargs
+name: js-kwargs-commentary
+class: flatten-unify-ul
 args: `{ sample_id, sample_name }`
 body: …
 fn_comment: // 🎉 🙌
 
 --
+emoji: 
 
-- catch: still no compiler…
+Imagine JavaScript, but:
 
 --
+class: highlight-inline-code
+- always call functions with `({`, `})` instead of `(`, `)`
+
+--
+- always declare functions with `({`, `})` instead of `(`, `)`
+
+--
+- no more argument order!
+
+---
+template: js-kwargs-commentary
 args: { sample_id, sample_name }
-passed: sample_name`z`, sample_id
+passed: sample_name, sample_id
+emoji: &nbsp;
+Just one problem…
+
+--
+still no compiler!
+
+--
+class: oops-comment
+args: { sample_id, `sample_name` }
+passed: `sample_namez`, sample_id
 emoji: OOPS
+comment: // oops!
 fn_comment: 
 
 ---
+class: line-height-code-11
 heading: v4: "Value Classes"
-sampleId: case class SampleId  (sampleId  : String)
-sampleName: case class SampleName(sampleName: String)
-eqnew: =
-sampleIdParam: `SampleId`
-sampleNameParam: `SampleName`
-sampleIdArg: `sampleId`
-sampleNameArg: `sampleName`
+sampleId: case class `SampleId`  (sampleId  : String)
+sampleName: case class `SampleName`(sampleName: String)
 
 # {{heading}}
 
@@ -332,6 +415,11 @@ sampleNameArg: `sampleName`
 ```
 
 --
+sampleId: case class SampleId  (sampleId  : String)
+sampleName: case class SampleName(sampleName: String)
+sampleIdParam: `SampleId`
+sampleNameParam: `SampleName`
+
 ```
 def getRecords(sampleId: {{sampleIdParam}}, sampleName: {{sampleNameParam}}): Unit = { 
   … 
@@ -339,42 +427,73 @@ def getRecords(sampleId: {{sampleIdParam}}, sampleName: {{sampleNameParam}}): Un
 ```
 
 --
+sampleIdParam: SampleId
+sampleNameParam: SampleName
+sampleIdTypeDecl: `SampleId`
+sampleNameTypeDecl: `SampleName`
+eqnew: =
+firstArg: sampleId
+secondArg: sampleName
+comment: 
+
 ```
 def main(): Unit = {
-  val sampleId  : SampleId   {{eqnew}} SampleId(prompt("Sample ID: "))
-  val sampleName: SampleName {{eqnew}} SampleName(prompt("Sample name: "))
+  val sampleId   {{eqnew}} {{sampleIdTypeDecl}}(prompt("Sample ID: "))
+  val sampleName {{eqnew}} {{sampleNameTypeDecl}}(prompt("Sample name: "))
 
-  // Compile error!
-  val records = getRecords({{sampleIdArg}}, {{sampleNameArg}})  
+  {{comment}}
+  val records = getRecords({{firstArg}}, {{secondArg}})  
 }
 ```
 
 --
 name: value-classes
+class: good-comment
+sampleIdParam: `SampleId`
+sampleNameParam: `SampleName`
+sampleIdTypeDecl: SampleId
+sampleNameTypeDecl: SampleName
+firstArg: `sampleName`
+secondArg: `sampleId`
+comment: // Compile error!
 
-.good[
+.banner.good[
 🎉 COMPILE ERROR! 🎉]
 
----
-template: value-classes
+--
 heading: v4.1: Value Classes
 sampleId: class SampleId  (val sampleId  : String) `extends AnyVal`
 sampleName: class SampleName(val sampleName: String) `extends AnyVal`
 eqnew: = `new`
 sampleIdParam: SampleId
 sampleNameParam: SampleName
-sampleIdArg: sampleId
-sampleNameArg: sampleName
+firstArg: sampleName
+secondArg: sampleId
 
-.footnote[ 
-[scala-lang.org: Value Classes](http://docs.scala-lang.org/overviews/core/value-classes.html)]
+- [scala-lang.org: Value Classes](http://docs.scala-lang.org/overviews/core/value-classes.html)
+
+--
+- unboxed at runtime; compiler unrolls to enclosed "value"
+
+--
+- easy to end up boxing though
+
+--
+- `case class`es often easier to use
 
 ---
+name: dry-base
+class: line-height-code-11, good-comment
+sampleId:   `sampleId`  :
+sampleName: `sampleName`:
+sampleIdVal:   `sampleId`  : `SampleId`   =
+sampleNameVal: `sampleName`: `SampleName` =
+
 # DRY
 
 ```
-class `SampleId`  (val `sampleId`  : String) extends AnyVal
-class `SampleName`(val `sampleName`: String) extends AnyVal
+class `SampleId`  (val {{sampleId}} String) extends AnyVal
+class `SampleName`(val {{sampleName}} String) extends AnyVal
 ```
 
 ```
@@ -385,118 +504,199 @@ def getRecords(`sampleId`: `SampleId`, `sampleName`: `SampleName`): Unit = {
 
 ```
 def main(): Unit = {
-  val `sampleId`  : `SampleId`   = new `SampleId`(prompt("Sample ID: "))
-  val `sampleName`: `SampleName` = new `SampleName`(prompt("Sample name: "))
+  val {{sampleIdVal}} new `SampleId`(prompt("Sample ID: "))
+  val {{sampleNameVal}} new `SampleName`(prompt("Sample name: "))
 
   // Compile error!
   val records = getRecords(`sampleName`, `sampleId`)  
 }
 ```
 
----
-count: false
-
-# DRY
-```
-class `SampleId`  (val value: String) extends AnyVal
-class `SampleName`(val value: String) extends AnyVal
-```
-
-```
-def getRecords(`sampleId`: `SampleId`, `sampleName`: `SampleName`): Unit = { 
-  … 
-}
-```
-
-```
-def main(): Unit = {
-  val `sampleId`   = new `SampleId`  (prompt("Sample ID: "))
-  val `sampleName` = new `SampleName`(prompt("Sample name: "))
-
-  // Compile error!
-  val records = getRecords(`sampleName`, `sampleId`)  
-}
-```
+--
+- `/SampleId/i`: 8x
+- `/SampleName/i`: 8x
 
 ---
+name: dry-deduped
+template: dry-base
+sampleId:   value:
+sampleName: value:
+sampleIdVal:   `sampleId`   =
+sampleNameVal: `sampleName` =
+
+--
+- `/SampleId/i`: 6x
+- `/SampleName/i`: 6x
+
+--
+- can we do better?
+
+---
+class: line-height-code-11
 # v5: Implicits
 
 --
+SampleIdDecl:   SampleId  (
+SampleNameDecl: SampleName
 ```
-case class SampleId  (value: String)
-case class SampleName(value: String)
+case class {{SampleIdDecl}}value: String)
+case class {{SampleNameDecl}}(value: String)
 ```
 
 --
 i: `implicit`
 body: …
 sampleIdParam: sampleId
+sampleIdParamType: SampleId
 sampleNameParam: sampleName
+sampleNameParamType: SampleName
 
 ```
-def getRecords({{i}} {{sampleIdParam}}: SampleId, {{sampleNameParam}}: SampleName): Unit = { 
+def getRecords({{i}} {{sampleIdParam}}: {{sampleIdParamType}}, {{sampleNameParam}}: {{sampleNameParamType}}): Unit = { 
   {{body}}
 }
 ```
 
 --
-name: implicits-full-1
+class: good-comment
 sampleIdVal:   sampleId   =
 sampleNameVal: sampleName =
+SampleIdInstance:   SampleId  (
+SampleNameInstance: SampleName
+comment:
+getRecords:
 
 ```
 def main(): Unit = {
-  {{i}} val {{sampleIdVal}} SampleId  (prompt("Sample ID: "))
-  {{i}} val {{sampleNameVal}} SampleName(prompt("Sample name: "))
+  {{i}} val {{sampleIdVal}} {{SampleIdInstance}}prompt("Sample ID: "))
+  {{i}} val {{sampleNameVal}} {{SampleNameInstance}}(prompt("Sample name: "))
 
-  // No args! 😎
-  val records = getRecords
+  {{comment}}
+  {{getRecords}}
 }
 ```
 
 --
+name: implicits-full-1
+comment: // No args! ⟹ compiler does the right thing automatically! 😎
+getRecords: val records = getRecords
+--
 
-.good[
+.koolaid[
 ![](koolaid.jpg)
 ]
 
 ---
 template: implicits-full-1
+name: implicits-bullets-1
+count: false
 i: implicit
+--
+sampleIdVal:   `sampleId`   =
+sampleNameVal: `sampleName` =
+sampleIdParam: `sampleId`
+sampleNameParam: `sampleName`
+- variable names: what are they good for?
+
+--
+  - ≈nothing?
+
+--
 sampleIdVal: `_1` =
 sampleNameVal: `_2` =
-
 --
 sampleIdParam: `_3`
 sampleNameParam: `_4`
 body: // pass Sample{Id,Name} implicitly, or materialize with "implicitly"
+--
+  - put that info in types!
+
+---
+template: implicits-bullets-1
+name: implicits-bullets-2
+count: false
+sampleIdVal: _1 =
+sampleNameVal: _2 =
+sampleIdParam: _3
+sampleNameParam: _4
+--
+SampleIdDecl:   `SampleId`  (
+SampleNameDecl: `SampleName`
+sampleIdParamType:   `SampleId`
+sampleNameParamType: `SampleName`
+SampleIdInstance:   `SampleId`  (
+SampleNameInstance: `SampleName`
+--
+Redundancy check:
 
 --
-nothing: 
-- variable names: what are they good for? {{nothing}}
+- `/SampleId/i`: 3x
+- `/SampleName/i`: 3x
+
 
 --
-nothing: (nothing?)
+Seems minimal for this example:
+
 --
-nothing: (nothing? use types!)
+sampleIdParamType:   SampleId
+sampleNameParamType: SampleName
+SampleIdInstance:   SampleId  (
+SampleNameInstance: SampleName
+- declare
+
 --
+SampleIdDecl:   SampleId  (
+SampleNameDecl: SampleName
+SampleIdInstance:   `SampleId`  (
+SampleNameInstance: `SampleName`
+- instantiate
+
+--
+sampleIdParamType:   `SampleId`
+sampleNameParamType: `SampleName`
+SampleIdInstance:   SampleId  (
+SampleNameInstance: SampleName
+- receive
+
+--
+SampleIdDecl:   `SampleId`  (
+SampleNameDecl: `SampleName`
+sampleIdParamType:   `SampleId`
+sampleNameParamType: `SampleName`
+SampleIdInstance:   `SampleId`  (
+SampleNameInstance: `SampleName`
+.floating-bottom-right[
+"as few as possible,
+<br/>
+and no fewer!"]
+
+---
+template: implicits-bullets-2
+count: false
 name: scala-bullets
-- Scala implicits point toward new patterns
+c: :
+Scala implicits point toward new patterns{{c}}
 
 --
-  - for dramatically reducing boilerplate
+- for dramatically reducing boilerplate
 
 --
-  - and certain kinds of errors
+- and certain kinds of errors
 
 --
-  - by eliminating parameter-passing!
+- by eliminating parameter-passing!
 
 ---
 template: scala-bullets
+c:
+clunky: 
+- but… {{clunky}}
 
 --
-- But such patterns are a bit clunky in Scala today
+clunky: clunky in Scala today
+
+--
+- need:
 
 --
   - {partial, multiple} implicit parameter lists
@@ -508,6 +708,7 @@ template: scala-bullets
   - actively being researched for Scala 3.x ("[Dotty](http://dotty.epfl.ch/)")
 
 ---
+class: line-height-code-12
 # v6: best of all possible worlds
 
 --
@@ -515,6 +716,7 @@ Imaginary language:
 
 --
 ```
+// algebraic data types defined by constituent field-types
 class SampleId   { String }
 class SampleName { String }
 ```
@@ -535,23 +737,36 @@ def getRecords(SampleId, SampleName) {
 --
 path: Path(SampleId / SampleName)  // construct a filesystem path to read from
 --
-lines: Lines                        // uses "implicit" Path, generates List of "Line"s
+lines: Lines                        // reads "implicit" Path, emits list of "Line"s
 --
 record: Line⇒Record(…)             // define how to turn a Line into a record
 --
-records: Records                      // make 'Records' from {Lines, 'String⇒Record'}
+records: Records                      // make 'Records' from {Lines, 'Line⇒Record'}
 --
 ```
 def main(): Unit = {
   SampleId  (prompt("Sample ID: "))
   SampleName(prompt("Sample name: "))
-
-  getRecords
+  getRecords  // needs SampleId, SampleName; has SampleId, SampleName
 }
 ```
+--
+default:
+- no variable names {{default}}
+
+--
+default: (by default)
+--
+default2:
+- no argument-passing {{default2}}
+
+--
+default2: (by default)
+--
+  - compiler routes arguments to proper destinations by type
 
 ---
-# [Unison](http://unisonweb.org/2015-05-07/about.html)
+# Aside: [Unison](http://unisonweb.org/2015-05-07/about.html)
 
 --
 - Scala/Haskell person's attempt at a new programming ~~language~~ *paradigm* ![](mindblown.gif)
@@ -560,156 +775,141 @@ def main(): Unit = {
 - typed by construction, default global namespace auto-completable by type
 
 --
-![](unison.gif)
+  .unison-gif[
+  &nbsp;]
 
 ---
-name: form-function
-# Aside: separating code form, function
+class: line-height-code-12, code-cols-slide
+
+## Aside: separating code form, function
 
 --
-- "coding style": that which relates to *form*, doesn't affect *function*
+Alice and Bob are working in the same codebase:
 
 --
-- Two developers need not view same code in same way
-
---
-  - "style guides" ⟶ "style-sheets (for code)"
-
---
-  - stored in local editor configs
-
---
-  - not managed by version control
-
---
-  - can differ between developers in same codebase
-
---
-- Exists today:
-
---
-  - syntax highlighting
-
---
-  - code-block folding
-
---
-- Wanted:
-
---
-  - comment/doc rendering
-
---
-  - `import` statements
-
---
-  - whitespace
-
---
-  - exactly the things that shouldn't need to be shared between developers, committed to version control, etc.
-
----
-name: code-cols-base
-layout: true
-class: line-height-code, code-cols-slide, main-slide
-sp1: ( 1
-sp2: ( 2
-cs1: ,   1
-cs3: ,  3
-cs4: ,   4
-at: →  t
-a: →
-da: ->
+sp1: (1
+sp2: (2
+sp10: (10
+cs1: , 1
+cs3: , 3
+cs4: , 4
+leftArrowT: -> t
+leftArrow: ->
+rightArrow: ->
+rightLeadingComma: 
+rightTrailingComma: ,
+leftTrailingComma: ,
+folded: 
 Position: Position
-Pos: Pos
+Pos: Position
+PosImport: Position
 expectedLeft: expected
 expectedRight: expected
-
-# Aside: separating code form, function
-
-{{content}}
 
 .left-code-col.code-col[
 ```
 import com.foo.{{Position}}
 def check({{expectedLeft}}: List[{{Position}}]) {
   {{expectedLeft}} should be(
-    {{Position}}{{sp1}}{{cs1}}0) {{a}} false,
-    {{Position}}{{sp2}}, 1107) {{at}}rue,
-    {{Position}}(10{{cs4}}2) {{a}} false,
-    {{Position}}(22{{cs3}}33) {{at}}rue
+    {{Position}}{{sp1}}{{cs1}}0) {{leftArrow}} false{{leftTrailingComma}}
+    {{Position}}{{sp2}}, 1107) {{leftArrowT}}rue{{leftTrailingComma}}
+    {{Position}}{{sp10}}{{cs4}}2) {{leftArrow}} false{{leftTrailingComma}}
+    {{Position}}(222{{cs3}}33) {{leftArrowT}}rue
   )
 }
 ```]
 
 .right-code-col.code-col[
 ```
-import com.foo.{ Position ⇒ {{Pos}} }
+import com.foo.{{PosImport}}
 def check({{expectedRight}}: List[{{Pos}}]) {
-  {{expectedRight}} should be(
-    {{Pos}}(1, 10) {{da}} false,
-    {{Pos}}(2, 107) {{da}} true,
-    {{Pos}}(10, 42) {{da}} false,
-    {{Pos}}(22, 333) {{da}} true
+  {{expectedRight}} should be( {{folded}}
+    {{Pos}}(1, 10) {{rightArrow}} false{{rightTrailingComma}}
+    {{rightLeadingComma}}{{Pos}}(2, 1107) {{rightArrow}} true{{rightTrailingComma}}
+    {{rightLeadingComma}}{{Pos}}(10, 42) {{rightArrow}} false{{rightTrailingComma}}
+    {{rightLeadingComma}}{{Pos}}(222, 333) {{rightArrow}} true
   )
 }
 ```]
 
----
-template: code-cols-base
-name: code-cols
-Consider the following two equivalent code blocks:
-
+--
+name: code-cols-base
+today: Today…
+.clear-both[
+{{today}}]
 --
 class: alternate-syntax-colors
+- they are free to view the same code with different color schemes
 
 --
-- we don't save syntax-highlighting colors to disk / version-control
+colorscheme: - color-scheme is not saved to version control, just local editor settings
+  {{colorscheme}}
 
 --
-- developers can configure them independently from one another
+name: pre-folding
+codefolding: - likewise: code-folding
+configure: - developers can configure them independently from one another
+  {{configure}}
+
+--
+class: code-cols-folding
+folded: `…` )
+{{codefolding}}
+
+---
+template: pre-folding
+{{codefolding}}
 
 --
 - why not the same for:
 
 --
-template: code-cols
-sp1: (` `1
-sp2: (` `2
+sp1: (`  `1
+sp2: (`  `2
+sp10: (` `10
 cs1: , `  `1
 cs3: , ` `3
 cs4: , `  `4
-at: → ` `t
+leftArrowT: -> ` `t
+leftTrailingComma: `,`
+rightLeadingComma: `,`
+rightTrailingComma:
   - whitespace
 
 --
-sp1: ( 1
-sp2: ( 2
+sp1: (  1
+sp2: (  2
+sp10: ( 10
 cs1: ,   1
 cs3: ,  3
 cs4: ,   4
-at: `→`  t
-a: `→`
-da: `->`
-  - unicode abbreviations
+leftTrailingComma: ,
+rightLeadingComma: ,
+leftArrow: `→`
+leftArrowT: `→`  t
+rightArrow: `->`
+  - unicode shorthands
 
 --
-at: →  t
-a: →
-da: ->
+leftArrow: →
+leftArrowT: →  t
+rightArrow: ->
 Position: `Position`
 Pos: `Pos`
-  - arbitrary import names
+PosImport: { `Position ⇒ Pos` }
+  - arbitrary import names/renames
 
 --
 Position: Position
 Pos: Pos
+PosImport: { Position ⇒ Pos }
 expectedLeft: `expected`
 expectedRight: `exp`
-  - stretch: variable names
+class: ul-no-margin-bottom
+  - **variable names**?!
 
 ---
 layout: false
 class: center, middle, fin, main-slide
 
-# 👍🏼
+# 🏁

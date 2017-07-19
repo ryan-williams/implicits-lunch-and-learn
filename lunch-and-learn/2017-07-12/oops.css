@@ -1,20 +1,42 @@
-.oops {
+.banner {
   text-align: center;
-  color: red;
   font-size: 2em;
+  line-height: 1em;
   font-weight: bold;
+}
+
+.oops {
+  color: red;
 }
 
 .good {
-  text-align: center;
   color: green;
-  font-size: 2em;
-  font-weight: bold;
 }
 
 .meh {
-  text-align: center;
   color: darkgoldenrod;
-  font-size: 2em;
-  font-weight: bold;      
 }
+
+.koolaid {
+  position: absolute;
+  bottom: 1em;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.good-comment .hljs-comment {
+  color: green;
+  font-weight: bold;
+}
+
+.meh-comment .hljs-comment {
+  color: darkgoldenrod;
+  font-weight: bold;
+}
+
+.oops-comment .hljs-comment {
+  color: red;
+  font-weight: bold;
+}
+

@@ -2,6 +2,7 @@
   /*position: absolute;*/
   /*top: 50%;*/
   width: 48%;
+  /*padding-top: 1em;*/
 }
 
 .code-col pre {
@@ -22,6 +23,31 @@
 
 .code-cols-slide ul {
 	clear: both;
+}
+
+.code-cols-slide h3 {
+	margin-top: 0.3em;
+	margin-bottom: 0.4em;
+}
+
+.code-cols-folding .right-code-col .remark-code-line:nth-child(4) {
+	display: none;
+}
+
+.code-cols-folding .right-code-col .remark-code-line:nth-child(5) {
+	display: none;
+}
+
+.code-cols-folding .right-code-col .remark-code-line:nth-child(6) {
+	display: none;
+}
+
+.code-cols-folding .right-code-col .remark-code-line:nth-child(7) {
+	display: none;
+}
+
+.code-cols-folding .right-code-col .remark-code-line:nth-child(8) {
+	display: none;
 }
 
 .alternate-syntax-colors .right-code-col code {
@@ -65,3 +91,6 @@
   color: #842;
 }
 
+.ul-no-margin-bottom ul {
+	margin-bottom: 0;
+}
