@@ -162,36 +162,63 @@ name: named-args
 --
 ## Python
 --
+extra_args: ):
 
 ```python
-
-def get_records(sample_id, sample_name):
+def get_records(sample_id, sample_name{{extra_args}}
   …
-
 ```
 --
+class: hide-line-10, hide-line-11
+timestamp:
 comment: 
+sample_id:   `sample_id = sample_name`
+sample_name: `sample_name = sample_id`
+line10:
+line11:
+first_line:
 
 ```python
 def main():
-
+  {{first_line}}
   sample_id   = prompt("Sample ID: ")
   sample_name = prompt("Sample name: ")
-
+  {{timestamp}}
   {{comment}}
   records = get_records(
-    `sample_id = sample_name`, 
-    `sample_name = sample_id`
+    {{sample_id}} 
+    {{sample_name}}
+    {{line10}}
+    {{line11}}
   )
-
 ```
-
 --
 class: meh-comment
 comment: # oops?
+banner: OOPS?
 .banner.meh[
-OOPS?]
-
+{{banner}}]
+--
+comment:
+banner: 
+sample_id:   sample_id   = sample_id,    
+sample_name: sample_name = sample_name   
+--
+class: normal-comment-weight
+sample_id:   sample_id   = sample_id,
+sample_name: sample_name = sample_name   # ok, fine
+--
+class: show-line-10
+sample_name: sample_name = sample_name,  # ok, fine
+line10:      timestamp   = timestamp     # we type everything twice here
+timestamp:   timestamp   = time.time()
+--
+extra_args: , timestamp):  # and once up here
+--
+class: show-line-11
+line10:      timestamp   = timestamp,    # we type everything twice here
+line11:      run_id      = run_id        # but maybe there is a better way…
+first_line:  run_id      = query_database()
 ---
 template: named-args
 name: scala-named-args

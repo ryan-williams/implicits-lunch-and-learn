@@ -41,3 +41,27 @@ pre {
   margin-top: 0.8em;
   margin-bottom: 0.6em;
 }
+
+.hide-line-10 .remark-code-line:nth-child(10) {
+	display: none;
+}
+
+.show-line-10 .remark-code-line:nth-child(10) {
+	display: inherit;
+}
+
+.hide-line-11 .remark-code-line:nth-child(11) {
+	display: none;
+}
+
+.show-line-11 .remark-code-line:nth-child(11) {
+	display: inherit;
+}
+
+.hljs-default .hljs-comment {
+  color: green;
+}
+
+.normal-comment-weight .hljs-comment {
+	font-weight: normal;
+}
