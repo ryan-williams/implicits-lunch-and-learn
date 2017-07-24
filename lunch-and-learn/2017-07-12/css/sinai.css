@@ -4,7 +4,7 @@ h1,h2,h3,h4 {
 }
 
 .title-slide {
-  background-image: url(/img/bg-sinai-front.png);
+  background-image: url(../img/bg-sinai-front.png);
   background-size: cover;
   color: white;
 }
@@ -19,7 +19,7 @@ h1,h2,h3,h4 {
 }
 
 .main-slide {
-  background-image: url(/img/bg-sinai-main.png);
+  background-image: url(../img/bg-sinai-main.png);
   background-size: 100%;
   background-position-y: 1px; 
 }
