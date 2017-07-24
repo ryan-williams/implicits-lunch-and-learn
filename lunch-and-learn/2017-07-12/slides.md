@@ -27,11 +27,11 @@ class: pad-h2-bottom
 
 --
 .img-container[
-![Github screenshot from PR fixing normal/tumor arugument mixup](img/guac.png)]
+[![Github screenshot from PR fixing normal/tumor arugument mixup](img/guac.png)](https://github.com/hammerlab/guacamole/pull/575)]
 
 --
 .img-container[
-![Github screenshot showing normal/tumor argument mixup diff](img/github-normal-tumor-diff.png)]
+[![Github screenshot showing normal/tumor argument mixup diff](img/github-normal-tumor-diff.png)](https://github.com/hammerlab/guacamole/pull/575/files#diff-692ff1f546f34ce892d2ee7cdedfd915)]
 
 ---
 template: hardest-problem
@@ -276,7 +276,7 @@ val calledAlleles =
   )
 ```
 --
-Two (trivial) things happening here:
+Just two (trivial) things happening here:
 
 --
 minAreaVaf: `minAreaVaf = args.minAreaVaf / 100.0f`
@@ -285,7 +285,7 @@ minAreaVaf: `minAreaVaf = args.minAreaVaf / 100.0f`
 --
 minAreaVaf: minAreaVaf = args.minAreaVaf / 100.0f
 discoverGermlineVariants: `discoverGermlineVariants`
-2. call .highlight-inline-code[`discoverGermlineVariants`] with obvious arguments
+2. call .highlight-inline-code[`discoverGermlineVariants`] with (10!) obvious arguments
 
 
 --
@@ -312,10 +312,12 @@ class: line-height-code-12
 ## Python
 
 --
+kwargs_comment:
+
 ```python
 
 def get_records(`**kwargs`):
-  `sample_id`   = `kwargs['sample_id']`
+  `sample_id`   = `kwargs['sample_id']`    {{kwargs_comment}}
   `sample_name` = `kwargs['sample_name']`
   …
 ```
@@ -340,7 +342,8 @@ class: meh-comment
 comment: # oops?
 .banner.meh[
 OOPS?]
-
+--
+kwargs_comment: # such boilerplate!
 ---
 template: kwargs
 
@@ -548,6 +551,16 @@ firstArg: `sampleName`
 
 --
 name: dry-deduped
+sampleId: class SampleId  (val `value`: String) extends AnyVal
+sampleName: class SampleName(val `value`: String) extends AnyVal
+sampleNameParamName: sampleName
+sampleNameParam: SampleName
+sampleNameVar: sampleName = new
+sampleNameTypeDecl: SampleName
+firstArg: sampleName
+Convert redundant field name to placeholder ("`value`")…
+
+--
 sampleId: class `SampleId`  (val value: String) extends AnyVal
 sampleIdParamName: `sampleId`
 sampleIdParam: `SampleId`
@@ -557,9 +570,11 @@ secondArg: `sampleId`
 sampleName: class `SampleName`(val value: String) extends AnyVal
 sampleIdVal:   `sampleId`   =
 sampleNameVal: `sampleName` =
-`AnyVal` field name redundant, convert to "`value`"…
-
---
+sampleNameParamName: `sampleName`
+sampleNameParam: `SampleName`
+sampleNameVar: `sampleName` = new
+sampleNameTypeDecl: `SampleName`
+firstArg: `sampleName`
 - `/SampleId/i`: 6x
 - `/SampleName/i`: 6x
 
@@ -657,16 +672,15 @@ sampleNameVal: _2 =
 sampleIdParam: _3
 sampleNameParam: _4
 --
+Redundancy check:
+
+--
 SampleIdDecl:   `SampleId`  (
 SampleNameDecl: `SampleName`
 sampleIdParamType:   `SampleId`
 sampleNameParamType: `SampleName`
 SampleIdInstance:   `SampleId`  (
 SampleNameInstance: `SampleName`
---
-Redundancy check:
-
---
 - `/SampleId/i`: 3x
 - `/SampleName/i`: 3x
 
